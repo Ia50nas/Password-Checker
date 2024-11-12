@@ -3,12 +3,13 @@ import re
 def check_password_strength(password):
     ChecksPassed = 0  # Initialize Check score
     feedback = []  # To collect feedback messages
-    
+
     # 1st Check: Check length criteria
     if len(password) >= 8:
         ChecksPassed += 1
     else:
         feedback.append("Password should be at least 8 characters long.")
+        ChecksPassed -= 2
     
     # 2nd Check: Check for lowercase letters
     if re.search(r"[a-z]", password):
@@ -38,6 +39,7 @@ def check_password_strength(password):
     common_patterns = ["1234", "password", "abc", "qwerty"]
     if any(pattern in password for pattern in common_patterns):
         feedback.append("Password contains a common pattern. Try something more unique.")
+        ChecksPassed -= 2
     else:
         ChecksPassed += 1
     
@@ -60,7 +62,7 @@ def check_password_strength(password):
         strength = "Strong"
     elif ChecksPassed == 4:
         strength = "Moderate"
-    elif ChecksPassed < 4:
+    else:
         strength = "Weak"
     
     feedback.append(f"Password strength: {strength}")
