@@ -97,7 +97,7 @@ generated_password_label = ttk.Label(root, text="", font=("Helvetica", 10, "bold
 generated_password_label.pack(pady=5)
 
 # Customizable Password Length Slider
-length_label = ttk.Label(root, text="Select Password Length:")
+length_label = ttk.Label(root, text="Select Random Generated Password Length:")
 length_label.pack(pady=5)
 length_scale = tk.Scale(root, from_=8, to=20, orient="horizontal")
 length_scale.set(12)  # Default length
