@@ -3,13 +3,15 @@ import re
 def check_password_strength(password):
     checks_passed = 0  # Initialize check score
     feedback = []  # To collect feedback messages
+    LenFlag = False
 
     # 1st Check: Check length criteria
     if len(password) >= 8:
         checks_passed += 1
     else:
         feedback.append("Password should be at least 8 characters long.")
-    
+        LenFlag = True
+
     # 2nd Check: Check for lowercase letters
     if re.search(r"[a-z]", password):
         checks_passed += 1
@@ -54,26 +56,28 @@ def check_password_strength(password):
         feedback.append("Password contains a date pattern. Try something more unique.")
     else:
         checks_passed += 1
-    
-        # 8th Check: Repetition Detection
+
+    # 8th Check: Repetition Detection
     if re.search(r"(.)\1{2,}", password):  # Detects sequences with 3 or more repeated characters
         feedback.append("Password contains repeating sequences. Try to make it more varied.")
+        checks_passed -= 1  # Deduct a point for repetition
     else:
         checks_passed += 1
     
     # 9th Check: Complexity Evaluation (Balanced use of characters)
     if re.search(r"^[A-Za-z]+$", password) or re.search(r"^[0-9]+$", password):
         feedback.append("Password is unbalanced; avoid long stretches of only letters or only numbers.")
+        checks_passed -= 1  # Deduct a point for unbalanced use
     else:
         checks_passed += 1
 
     # Determine password strength based on total points
-    if checks_passed >= 7:
+    if (checks_passed >= 7) and (LenFlag == False):
         strength = "Strong"
-    elif 5 <= checks_passed < 7:
+    elif (4 <= checks_passed < 7) and (LenFlag == False):
         strength = "Moderate"
     else:
         strength = "Weak"
     
     feedback.append(f"Password strength: {strength}")
-    return "\n".join(feedback)
+    return "\n".join(feedback)  # Join feedback into a single string to be displayed in the GUI

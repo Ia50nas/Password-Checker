@@ -5,17 +5,25 @@ from PasswordCheck import check_password_strength
 from PasswordGenerator import generate_strong_password
 
 # Function to evaluate password strength and update strength label with color coding
-def evaluate_password(event=None):
+def evaluate_password():
     password = entry.get()  # Get password from input field
     result = check_password_strength(password)
     
+    # Separate strength from feedback messages
+    feedback_lines = result.split("\n")
+    strength = feedback_lines[-1]  # Last line is the strength message
+    feedback_messages = "\n".join(feedback_lines[:-1])  # All lines except the last are feedback
+    
     # Update the strength label based on the strength result
-    if "Strong" in result:
+    if "Strong" in strength:
         strength_label.config(text="Strong", foreground="green")
-    elif "Moderate" in result:
+    elif "Moderate" in strength:
         strength_label.config(text="Moderate", foreground="orange")
     else:
         strength_label.config(text="Weak", foreground="red")
+    
+    # Display feedback messages in the comments label
+    comments_label.config(text=feedback_messages)
 
 # Function to generate a strong password and display it
 def generate_password():
@@ -32,11 +40,12 @@ def generate_password():
     
     # Set strength label to "Strong" when a password is generated
     strength_label.config(text="Strong", foreground="green")
+    comments_label.config(text="")  # Clear comments when a new password is generated
 
 # GUI setup
 root = tk.Tk()
 root.title("Password Strength Checker")
-root.geometry("400x600")  # Adjusted window size to fit additional information
+root.geometry("400x700")  # Adjusted window size to fit additional information
 root.configure(bg="#f5f5f5")  # Background color
 root.resizable(True, True)  # Allow window resizing
 
@@ -56,11 +65,14 @@ label.pack(pady=10)
 # Password entry field
 entry = ttk.Entry(root, show="*", width=30, font=("Helvetica", 10))
 entry.pack(pady=10)
-entry.bind("<KeyRelease>", evaluate_password)  # Bind key release to update strength label
 
 # Password Strength Label
 strength_label = ttk.Label(root, text="", font=("Helvetica", 12, "bold"))
 strength_label.pack(pady=5)
+
+# Comments Label to display detailed feedback on the current password
+comments_label = ttk.Label(root, text="", font=("Helvetica", 10), wraplength=350, justify="left")
+comments_label.pack(pady=5)
 
 # Checkbox to show or hide password
 show_password_var = tk.BooleanVar()
@@ -73,7 +85,7 @@ show_password_check = ttk.Checkbutton(
 show_password_check.pack(pady=5)
 
 # Button to check password strength
-button_check = ttk.Button(root, text="Check Strength", command=lambda: messagebox.showinfo("Password Strength", check_password_strength(entry.get())))
+button_check = ttk.Button(root, text="Check Strength", command=evaluate_password)
 button_check.pack(pady=5)
 
 # Button to generate a strong password
