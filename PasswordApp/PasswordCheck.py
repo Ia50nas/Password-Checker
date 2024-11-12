@@ -1,51 +1,45 @@
 import re
 
 def check_password_strength(password):
-    ChecksPassed = 0  # Initialize Check score
+    checks_passed = 0  # Initialize check score
     feedback = []  # To collect feedback messages
 
     # 1st Check: Check length criteria
     if len(password) >= 8:
-        ChecksPassed += 1
+        checks_passed += 1
     else:
         feedback.append("Password should be at least 8 characters long.")
-        ChecksPassed -= 1
     
     # 2nd Check: Check for lowercase letters
     if re.search(r"[a-z]", password):
-        ChecksPassed += 1
+        checks_passed += 1
     else:
         feedback.append("Password does not include lowercase letters.")
-        ChecksPassed -= 1
     
     # 3rd Check: Check for uppercase letters
     if re.search(r"[A-Z]", password):
-        ChecksPassed += 1
+        checks_passed += 1
     else:
         feedback.append("Password does not include uppercase letters.")
-        ChecksPassed -= 1
     
     # 4th Check: Check for numbers
     if re.search(r"[0-9]", password):
-        ChecksPassed += 1
+        checks_passed += 1
     else:
         feedback.append("Password does not include numbers.")
-        ChecksPassed -= 1
     
     # 5th Check: Check for special characters
-    if re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-        ChecksPassed += 1
+    if re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        checks_passed += 1
     else:
         feedback.append("Password does not include special characters.")
-        ChecksPassed -= 1
     
     # 6th Check: Check for common patterns
     common_patterns = ["1234", "password", "abc", "qwerty"]
     if any(pattern in password for pattern in common_patterns):
         feedback.append("Password contains a common pattern. Try something more unique.")
-        ChecksPassed -= 2
     else:
-        ChecksPassed += 1
+        checks_passed += 1
     
     # 7th Check: Check for dates
     date_patterns = [
@@ -58,14 +52,25 @@ def check_password_strength(password):
     
     if any(re.search(pattern, password) for pattern in date_patterns):
         feedback.append("Password contains a date pattern. Try something more unique.")
-        ChecksPassed -= 1
     else:
-        ChecksPassed += 1
+        checks_passed += 1
     
-    # Determine password strength
-    if ChecksPassed > 5:
+        # 8th Check: Repetition Detection
+    if re.search(r"(.)\1{2,}", password):  # Detects sequences with 3 or more repeated characters
+        feedback.append("Password contains repeating sequences. Try to make it more varied.")
+    else:
+        checks_passed += 1
+    
+    # 9th Check: Complexity Evaluation (Balanced use of characters)
+    if re.search(r"^[A-Za-z]+$", password) or re.search(r"^[0-9]+$", password):
+        feedback.append("Password is unbalanced; avoid long stretches of only letters or only numbers.")
+    else:
+        checks_passed += 1
+
+    # Determine password strength based on total points
+    if checks_passed >= 7:
         strength = "Strong"
-    elif 3 <= ChecksPassed <= 4:
+    elif 5 <= checks_passed < 7:
         strength = "Moderate"
     else:
         strength = "Weak"
